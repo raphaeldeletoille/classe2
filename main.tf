@@ -117,3 +117,26 @@ resource "azurerm_mssql_database" "sqldb" {
   enclave_type   = "VBS"
   auto_pause_delay_in_minutes = 60
 }
+
+## DEPLOYER 2 RESOURCE GROUP DEPUIS LE MEME BLOC (COUNT)
+## METTRE UNE VARIABLE DANS LE NOM DE VOTRE RESOURCE
+
+resource "azurerm_resource_group" "count_rg" {
+  count = 2
+
+  name = "${var.my_name}${count.index}"
+  location = "West Europe"
+}
+
+## DEPLOYER 2 RG (West Europe, West US) avec FOR_EACH
+## VOUS ALLEZ AVOIR BESOIN D UNE VARIABLE DE TYPE MAP
+
+resource "azurerm_resource_group" "foreach_rg" {
+  for_each = var.rg_map
+
+  name = each.value.name 
+  location = each.value.location
+}
+
+#DEPLOYER 1 VIRTUAL NETWORK DANS LE RG WEST EUROPE (DE VOTRE FOR_EACH)
+#DEPLOYER 3 SUBNETS AVEC COUNT DANS CE VNET
