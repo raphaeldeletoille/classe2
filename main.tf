@@ -17,7 +17,7 @@ provider "azurerm" {
 #terraform apply 
 
 resource "azurerm_resource_group" "rg" {
-  name     = "rgraphdkjsdhqk"
+  name     = "exampleraphrg"
   location = "West Europe"
 }
 
@@ -35,7 +35,7 @@ data "azurerm_client_config" "current" {}
 # }
 
 resource "azurerm_key_vault" "kv" {
-  name                        = "raphkeyvaultqkfjh"
+  name                        = "examplevaultraph"
   location                    = azurerm_resource_group.rg.location
   resource_group_name         = azurerm_resource_group.rg.name
   enabled_for_disk_encryption = true
@@ -87,7 +87,7 @@ resource "random_password" "password" {
 #SECURISEZ LE COMPTE LOCAL SQL AVEC VOTRE PASSWORD PRESENT DANS VOTRE KEYVAULT
 
 resource "azurerm_mssql_server" "sqlsrv" {
-  name                         = "raphsqlsrvsefiuh"
+  name                         = "exampleraphsqlsrv"
   resource_group_name          = azurerm_resource_group.rg.name
   location                     = "West US"
   version                      = "12.0"
@@ -140,3 +140,37 @@ resource "azurerm_resource_group" "foreach_rg" {
 
 #DEPLOYER 1 VIRTUAL NETWORK DANS LE RG WEST EUROPE (DE VOTRE FOR_EACH)
 #DEPLOYER 3 SUBNETS AVEC COUNT DANS CE VNET
+
+resource "azurerm_virtual_network" "vnet" {
+  name                = "raph-network"
+  location            = azurerm_resource_group.foreach_rg["rg1"].location
+  resource_group_name = azurerm_resource_group.foreach_rg["rg1"].name
+  address_space       = ["10.0.0.0/16"]
+  dns_servers         = ["10.0.0.4", "10.0.0.5"]
+}
+
+resource "azurerm_subnet" "subnet" {
+  count                = 3
+  name                 = "subnet${count.index}"
+  resource_group_name  = azurerm_resource_group.foreach_rg["rg1"].name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = ["10.0.${count.index}.0/24"] 
+
+  #1ER SUBNET = 10.0.0.0 / 10.0.0.255
+  #2eme SUBNET = 10.0.1.0 / 10.0.1.255
+  #...
+
+  delegation {
+    name = "delegation"
+
+    service_delegation {
+      name    = "Microsoft.ContainerInstance/containerGroups"
+      actions = ["Microsoft.Network/virtualNetworks/subnets/join/action", "Microsoft.Network/virtualNetworks/subnets/prepareNetworkPolicies/action"]
+    }
+  }
+}
+
+#DEPLOYER 1VM EN LINUX OU WINDOWS SERVER DANS VOTRE SUBNET 2
+#VOUS CONNECTER A VOTRE VM DEPUIS VOTRE PC 
+
+# SIZE OU SKU --> 	Standard_F2
