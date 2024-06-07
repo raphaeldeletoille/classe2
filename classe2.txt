@@ -1,0 +1,127 @@
+Controle Classe 2
+Indiquez votre nom ici : 
+
+1) Quels sont les trois services Clouds les plus utilisés dans le monde ? 
+
+2) Quels sont les avantages de l'utilisation de Terraform par rapport à la gestion manuelle de l'infrastructure ?
+
+3) Quel est le rôle d'un provider dans Terraform ?
+
+4) Donnez des exemples de commandes Terraform et leur utilité ?
+
+5) Qu'est un fichier tfstate dans Terraform ?
+
+6) Que permet le "for_each" dans Terraform ? 
+
+7) Quelles sont les étapes pour pouvoir commencer à utiliser Terraform sur Azure  ?
+
+8) Expliquez ce qu’est « Azure », donnez des exemples de ce qu'il est possible de déployer sur Azure ?
+
+9) Qu'est ce qu'un datasource dans Terraform ?
+
+10) Quel est le rôle d'un Log Analytics dans Azure ? 
+
+11) Quel est le rôle d'un coffre de clés (Keyvault) dans Azure ? 
+
+12) Quel est le rôle d'un compte de stockage (Storage Account) dans Azure ?
+
+13) Quel est le rôle d'un réseau virtuel (Virtual Network) dans Azure ?
+
+14) Quel est le rôle d'une grafana managed dans Azure ?
+
+15) Que permet le "count" dans terraform ?
+
+16) Décrivez ce que fait ce code : 
+data "azuread_user" "example" {
+    user_principal_name = "esgi@microsoft.com"
+  }
+  
+
+  resource "azurerm_resource_group" "example" {
+    name     = "example-resources"
+    location = "West Europe"
+  }
+  
+  resource "azurerm_key_vault" "example" {
+    name                        = "examplekeyvault"
+    location                    = azurerm_resource_group.example.location
+    resource_group_name         = azurerm_resource_group.example.name
+    enabled_for_disk_encryption = true
+    tenant_id                   = data.azuread_user.example.tenant_id
+    soft_delete_retention_days  = 7
+    purge_protection_enabled    = false
+  
+    sku_name = "standard"
+  }
+  
+  resource "azurerm_key_vault_access_policy" "example" {
+    key_vault_id = azurerm_key_vault.example.id
+  
+    tenant_id = data.azuread_user.example.tenant_id
+    object_id = data.azuread_user.example.object_id
+  
+    key_permissions = []
+  
+    secret_permissions = ["get", "list", "set", "delete", "recover", "backup", "restore"]
+  
+    certificate_permissions = []
+  }
+  
+17) Faire fonctionner ce code en remplaçant les « ____ » :
+provider "azurerm" {
+    features {}
+  }
+  resource "azurerm_resource_group" "rg" {
+    name     = "example-resources"
+    location = "West Europe"
+  }
+  resource "azurerm_virtual_network" "vnet" {
+    name                = "example-network"
+    resource_group_name = azurerm_resource_group.rg.name
+    location            = azurerm_resource_group.rg.location
+    address_space       = ["10.0.0.0/16"]
+  }
+  resource "azurerm_subnet" "subnet" {
+    count                = 2
+    name                 = "example-subnet${count.index}"
+    resource_group_name  = azurerm_resource_group.rg.name
+    virtual_network_name = 1)_______________________
+    address_prefixes     = ["10.0.${count.index}.0/24"]
+  }
+  resource "azurerm_network_interface" "networkcard" {
+    name                = "example-networkcard"
+    location            = azurerm_resource_group.rg.location
+    resource_group_name = azurerm_resource_group.rg.name
+  
+    ip_configuration {
+      name                          = "internal"
+      subnet_id                     = 2)_______________________
+      private_ip_address_allocation = "Dynamic"
+    }
+  }
+  resource "random_password" "password" {
+    length  = 16
+    special = true
+  }
+  resource "azurerm_virtual_machine" "vm" {
+    name                  = "example-vm"
+    location              = 3)_______________________
+    resource_group_name   = azurerm_resource_group.rg.name
+    network_interface_id  = 4)_______________________
+    vm_size               = "Standard_D2s_v3"
+  
+    os_profile {
+      admin_username = "testadmin"
+      admin_password = 5)_______________________
+    }
+  }
+  
+
+  Lorsque votre controle est terminé, sauvegardez votre fichier à votre nom 
+  Ouvrez Azure Storage Explorer puis :
+
+- Cliquez sur le symbole "prise" à gauche
+- Cliquez sur Blob Container
+- Sélectionnez Shared Access Signature URL
+- Collez dans Blob URL la clé suivante https://esgistorage01.blob.core.windows.net/classe2?sp=racwli&st=2024-06-07T14:42:03Z&se=2024-06-08T22:42:03Z&spr=https&sv=2022-11-02&sr=c&sig=BNCApzURIYeJeCDU3SwhCtISkTgmyeCdW2yvuUkPg3g%3D
+- Une fois connecté, Uploadez votre fichier (Non Zippé)
