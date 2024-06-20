@@ -1,127 +1,52 @@
-Controle Classe 2
-Indiquez votre nom ici : 
+Controle classe 2
+Créer un dossier PRENOM-NOM sur votre Bureau (le contrôle se fera depuis ce dossier)
+Vous indiquerez aussi votre PRENOM-NOM tout en haut de votre code en commentaire
 
-1) Quels sont les trois services Clouds les plus utilisés dans le monde ? 
+Nom de famille : 
+Jusqu'à D inclus = "West US"
+Jusqu'à M inclus = "West Europe, sauf MSSQL Server & Database en North Europe"
+Tous les autres = "East US"
 
-2) Quels sont les avantages de l'utilisation de Terraform par rapport à la gestion manuelle de l'infrastructure ?
+Utilisez la dernière version du provider disponible.
+Utilisez Commentaires, Variables, Count, For_Each, Datasources, mot de passe sécurisé lorsque nécessaire. 
 
-3) Quel est le rôle d'un provider dans Terraform ?
+Toutes les ressources entre guillemets existent déjà.
 
-4) Donnez des exemples de commandes Terraform et leur utilité ?
+Toutes les ressources à déployer commenceront par les 3 premières lettres de votre nom de famille (à l'exception du resource group, exercice1)
 
-5) Qu'est un fichier tfstate dans Terraform ?
+1) Déployer un resource group avec votre première lettre de prénom suivi de votre nom de famille. (toutes les ressources sont à déployer sur ce resource group)
 
-6) Que permet le "for_each" dans Terraform ? 
+2) Déployer un Keyvault avec tous les droits secret au groupe utilisateur "group-etudiants".
 
-7) Quelles sont les étapes pour pouvoir commencer à utiliser Terraform sur Azure  ?
+3) Déployer un MSSQL Server ainsi qu' une règle réseau pare-feu qui autorise votre IP publique et la mienne (82.123.113.93).
 
-8) Expliquez ce qu’est « Azure », donnez des exemples de ce qu'il est possible de déployer sur Azure ?
+4) Déployer une base de données (MSSQL_Database) sur votre MSSQL Server en General Purpose, Generation 5, Serverless, 1 Vcore Maximum
 
-9) Qu'est ce qu'un datasource dans Terraform ?
+5) Déployer 2 virtual network et 3 subnets sur chacun de vos virtual network.  
 
-10) Quel est le rôle d'un Log Analytics dans Azure ? 
+6) Déployer un storage account d'archives
 
-11) Quel est le rôle d'un coffre de clés (Keyvault) dans Azure ? 
+7) Créer un storage_container dans le storage account "helloitsme"
 
-12) Quel est le rôle d'un compte de stockage (Storage Account) dans Azure ?
+8) Déployer 1 vm Ubuntu avec le sku par défaut sur votre vnet 1 subnet 3 et stocker la clé SSH dans votre keyvault. Cette VM doit aussi être accessible publiquement. Activer le boot diagnostic en utilisant votre storage account.
 
-13) Quel est le rôle d'un réseau virtuel (Virtual Network) dans Azure ?
+9) Déployer 3 Disks --> un de 500Go, un de 1To, un de 2To et les connecter à votre VM. 
 
-14) Quel est le rôle d'une grafana managed dans Azure ?
+10) Déployer 1 log Analytics Workspace, et envoyer tous les logs (et uniquement les logs) de votre storage account dessus.
 
-15) Que permet le "count" dans terraform ?
+11) Donner les droits qui permettent de déployer ou détruire les ressources à l'utilisateur "glhf@deletoilleprooutlook.onmicrosoft.com" sur votre Resource Group
 
-16) Décrivez ce que fait ce code : 
-data "azuread_user" "example" {
-    user_principal_name = "esgi@microsoft.com"
-  }
-  
+12) Déployer un grafana sur lequel vous pouvez vous connecter uniquement avec les droits lecture. 
 
-  resource "azurerm_resource_group" "example" {
-    name     = "example-resources"
-    location = "West Europe"
-  }
-  
-  resource "azurerm_key_vault" "example" {
-    name                        = "examplekeyvault"
-    location                    = azurerm_resource_group.example.location
-    resource_group_name         = azurerm_resource_group.example.name
-    enabled_for_disk_encryption = true
-    tenant_id                   = data.azuread_user.example.tenant_id
-    soft_delete_retention_days  = 7
-    purge_protection_enabled    = false
-  
-    sku_name = "standard"
-  }
-  
-  resource "azurerm_key_vault_access_policy" "example" {
-    key_vault_id = azurerm_key_vault.example.id
-  
-    tenant_id = data.azuread_user.example.tenant_id
-    object_id = data.azuread_user.example.object_id
-  
-    key_permissions = []
-  
-    secret_permissions = ["get", "list", "set", "delete", "recover", "backup", "restore"]
-  
-    certificate_permissions = []
-  }
-  
-17) Faire fonctionner ce code en remplaçant les « ____ » :
-provider "azurerm" {
-    features {}
-  }
-  resource "azurerm_resource_group" "rg" {
-    name     = "example-resources"
-    location = "West Europe"
-  }
-  resource "azurerm_virtual_network" "vnet" {
-    name                = "example-network"
-    resource_group_name = azurerm_resource_group.rg.name
-    location            = azurerm_resource_group.rg.location
-    address_space       = ["10.0.0.0/16"]
-  }
-  resource "azurerm_subnet" "subnet" {
-    count                = 2
-    name                 = "example-subnet${count.index}"
-    resource_group_name  = azurerm_resource_group.rg.name
-    virtual_network_name = 1)_______________________
-    address_prefixes     = ["10.0.${count.index}.0/24"]
-  }
-  resource "azurerm_network_interface" "networkcard" {
-    name                = "example-networkcard"
-    location            = azurerm_resource_group.rg.location
-    resource_group_name = azurerm_resource_group.rg.name
-  
-    ip_configuration {
-      name                          = "internal"
-      subnet_id                     = 2)_______________________
-      private_ip_address_allocation = "Dynamic"
-    }
-  }
-  resource "random_password" "password" {
-    length  = 16
-    special = true
-  }
-  resource "azurerm_virtual_machine" "vm" {
-    name                  = "example-vm"
-    location              = 3)_______________________
-    resource_group_name   = azurerm_resource_group.rg.name
-    network_interface_id  = 4)_______________________
-    vm_size               = "Standard_D2s_v3"
-  
-    os_profile {
-      admin_username = "testadmin"
-      admin_password = 5)_______________________
-    }
-  }
-  
+BONUS) Déployer un cluster Kubernetes en West Europe, et indiquez moi le nombre de containers/pods en Running State.
 
-  Lorsque votre controle est terminé, sauvegardez votre fichier à votre nom 
-  Ouvrez Azure Storage Explorer puis :
+Lorsque votre code est terminé :
 
+Faites un Terraform Destroy
+
+Ouvrez Azure Storage Explorer puis -->
 - Cliquez sur le symbole "prise" à gauche
-- Cliquez sur Blob Container
-- Sélectionnez Shared Access Signature URL
-- Collez dans Blob URL la clé suivante https://esgistorage01.blob.core.windows.net/classe2?sp=racwli&st=2024-06-07T14:42:03Z&se=2024-06-08T22:42:03Z&spr=https&sv=2022-11-02&sr=c&sig=BNCApzURIYeJeCDU3SwhCtISkTgmyeCdW2yvuUkPg3g%3D
-- Une fois connecté, Uploadez votre fichier (Non Zippé)
+- Cliquez sur Conteneur d'objet Blob
+- Sélectionnez URL de signature d'accès partagé (SAS)
+- Collez dans URL SAS du conteneur d'objets blob la clé suivante https://esgistorage0202.blob.core.windows.net/classe2?sp=racwli&st=2024-06-20T15:29:40Z&se=2024-06-20T23:29:40Z&spr=https&sv=2022-11-02&sr=c&sig=vhR%2F5jfcVQbMFt9jPSQsledWKq6IFCD6MgKg8iYPj3o%3D
+- Une fois connecté, charger votre dossier complet (Non Zippé)
